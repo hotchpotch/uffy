@@ -3,9 +3,9 @@ package uffy {
     import flash.utils.describeType;
     import flash.utils.Dictionary;
 
-    public class CommandInterface {
+    public class Uffy {
         public static function register(constName:String, klass:Class):void {
-            if (!ExternalInterface.available) return;
+            if (!ExternalInterface.available || !ExternalInterface.objectID) return;
 
             init();
             classes[constName] = klass;
@@ -65,7 +65,7 @@ package uffy {
                    };
 
                    (function() {
-                       var swf = document.getElementsByName(objectID)[0];
+                       var swf = document.getElementById(objectID);
                        if (!swf) {
                            setTimeout(arguments.callee, 20);
                        } else {
