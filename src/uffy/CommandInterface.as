@@ -49,15 +49,18 @@ package uffy {
                                this._uid = swf.__register.apply(swf, [constName].concat(swf.__functionWrapper.registerArgs(args)));
                            }
                        };
-                       for (var j = 0; j < methods.length; j++) {
-                           klass.prototype[methods[j]] = (function() {
-                               var mName = methods[j];
+                       var helpString = [];
+                       for (var method in methods) { //var j = 0; j < methods.length; j++) {
+                           helpString.push(method + methods[method]);
+                           klass.prototype[method] = (function() {
+                               var mName = method;
                                return function() {
                                    var args = Array.prototype.slice.call(arguments, 0, arguments.length);
                                    return swf.__invoke.apply(swf, [this._uid, mName].concat(swf.__functionWrapper.registerArgs(args)));
                                };
                            })();
                        }
+                       klass.help = helpString.join("\n");
                        swf[constName] = klass;
                    };
 
@@ -135,8 +138,22 @@ package uffy {
         }
         
 
-        public static function nsMethods(klass:Class, ns:Namespace):Array {
-            return describeType(klass)..method.(String(attribute('uri')) == ns.uri).@name.toXMLString().split("\n");
+        public static function nsMethods(klass:Class, ns:Namespace):Object {
+            var methods:XMLList = describeType(klass)..method.(String(attribute('uri')) == ns.uri);
+            var res:Object = {};
+            for each (var method:XML in methods) {
+                var args:Array = [];
+                for each (var param:XML in method.parameter) {
+                    var a:String = '';
+                    if (param.@optional == 'true') a += '[';
+                    a += param.@type;
+                    if (param.@optional == 'true') a += ']';
+                    args.push(a);
+                }
+                var helpString:String = '(' + args.join(', ') + '):' + method.@returnType;
+                res[method.@name] = helpString;
+            }
+            return res;
         }
     }
 }
