@@ -27,5 +27,9 @@ package flay {
             });
             l.load(u);
         }
+
+        javascript function foobar(a:String, b:String = 'a', ...args):Object {
+            return null;
+        }
     }
 }

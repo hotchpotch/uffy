@@ -10,30 +10,31 @@ Uffy.prototype = {
         this.loadSWF(swf, this.swf_id);
     },
     loadSWF: function(swf, swf_id) {
-        // for http://github.com/cho45/flay/tree/master/flay.js
-        var html = [
-            '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" width="1" height="1" id="' + swf_id + '" align="middle">',
-                '<param name="allowscriptaccess" value="always" />',
-                '<param name="movie" value="' + swf + '" />',
-                '<param name="quality" value="high" />',
-                '<param name="bgcolor" value="#ffffff" />',
-                '<embed src="' + swf + '" quality="high" bgcolor="#ffffff" width="1" height="1" name="' + swf_id + '" align="middle" allowscriptaccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />',
-            '</object>'
-        ];
-
         var div = document.createElement('div');
-        with (div.style) {
-            position = "absolute";
-            top     = "0";
-            left    = "0";
-            width   = "0";
-            height  = "0";
-            margin  = "0";
-            padding = "0";
-            border  = "none";
-        }
+        div.style.display = 'inline';
+        div.width = 1;
+        div.height = 1;
         document.body.appendChild(div);
-        div.innerHTML = html.join('');
+
+        if (navigator.plugins && navigator.mimeTypes && navigator.mimeTypes.length) {
+            var o = document.createElement('object');
+            o.id = swf_id;
+            o.name = swf_id;
+            o.classid = 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000';
+            o.width = 1;
+            o.height = 1;
+            o.setAttribute('data', swf);
+            o.setAttribute('type', 'application/x-shockwave-flash');
+            var p = document.createElement('param');
+            p.setAttribute('name', 'allowScriptAccess');
+            p.setAttribute('value', 'always');
+            o.appendChild(p);
+            div.appendChild(o);
+        } else {
+            // IE
+            var object = '<object id="' + swf_id + '" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="1" height="1"><param name="movie" value="' + swf + '" /><param name="bgcolor" value="#FFFFFF" /><param name="quality" value="high" /><param name="allowScriptAccess" value="always" /></object>';
+            div.innerHTML = object;
+        }
     },
     getSWF: function() {
         return document.getElementById(this.swf_id);
@@ -44,7 +45,7 @@ Uffy.prototype = {
             callback.call(null, swf[name]);
         } else {
             var self = this;
-            setTimeout(function(){self.load(name, callback)}, 1000);
+            setTimeout(function(){self.load(name, callback)}, 30);
         }
     }
 };

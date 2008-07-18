@@ -59,7 +59,7 @@ function ok(res, commnet) {
 }
 
 function is(a, b, commnet) {
-    if (a == b) {
+    if (a.toString() == b.toString()) {
         addResult('success: ' + commnet || '', 'success');
     } else {
         addResult('error: ' + commnet || '', 'error');
